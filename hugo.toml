@@ -1,0 +1,59 @@
+baseURL = "https://go-simd.github.io/"
+title = "go-simd"
+disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+# Each repo card. "result" is the honest headline (wins AND parities/non-SIMD
+# outcomes). "kind" tags whether it is a stdlib drop-in or a primitive.
+[[params.repos]]
+  name = "base64"
+  accel = "encoding/base64"
+  kind = "drop-in"
+  result = "encode ~17× stdlib; beats emmansun/base64 ~5–6% (cycle-model-guided)."
+[[params.repos]]
+  name = "base32"
+  accel = "encoding/base32"
+  kind = "drop-in"
+  result = "encode ~7.9× stdlib (AVX2). No prior pure-Go SIMD base32 to beat."
+[[params.repos]]
+  name = "hex"
+  accel = "encoding/hex"
+  kind = "drop-in"
+  result = "beats tmthrgd/go-hex both ways — encode 20.4×, decode 6.24× stdlib."
+[[params.repos]]
+  name = "utf8"
+  accel = "unicode/utf8"
+  kind = "drop-in"
+  result = "Valid ~19× stdlib, edges stuartcarnie/go-simd ~3.5% (Lemire/Keiser)."
+[[params.repos]]
+  name = "adler32"
+  accel = "hash/adler32"
+  kind = "drop-in"
+  result = "~12–14× stdlib, but ~7% behind mhr3/adler32-simd — near-parity, honest."
+[[params.repos]]
+  name = "strconv"
+  accel = "strconv (base-10 parse)"
+  kind = "drop-in"
+  result = "modest, honest 1.13–1.37× on long inputs; never regresses (delegates short)."
+[[params.repos]]
+  name = "matchlen"
+  accel = "LZ match-finder primitive"
+  kind = "primitive"
+  result = "~10× scalar (NEON); real SIMD on all 4 arches; AVX2 ~2.08× SSE2."
+[[params.repos]]
+  name = "bitpack"
+  accel = "FastPFOR / simdcomp bit-packing"
+  kind = "primitive"
+  result = "~21–32× scalar — byte-exact vs Lemire's simdcomp."
+[[params.repos]]
+  name = "popcount"
+  accel = "Hamming weight over []byte"
+  kind = "primitive"
+  result = "size-dependent: ~9–12× in-cache, converges to memory-bound out-of-cache."
+[[params.repos]]
+  name = "histogram"
+  accel = "byte-value histogram"
+  kind = "primitive"
+  result = "multi-table scalar — measured, SIMD does NOT help (no scatter on AVX2/NEON)."
