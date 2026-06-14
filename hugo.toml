@@ -57,3 +57,28 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   accel = "byte-value histogram"
   kind = "primitive"
   result = "multi-table scalar — measured, SIMD does NOT help (no scatter on AVX2/NEON)."
+[[params.repos]]
+  name = "crc64"
+  accel = "hash/crc64"
+  kind = "drop-in"
+  result = "first pure-Go SIMD crc64 (stdlib + all Go libs are scalar); CLMUL folding, arm64 ~4.2× stdlib; all 6 arches (riscv64/loong64 scalar)."
+[[params.repos]]
+  name = "ascii85"
+  accel = "encoding/ascii85"
+  kind = "drop-in"
+  result = "first SIMD ascii85; real SIMD on 5 of 6 arches (arm64 = scalar — Go's arm64 asm lacks vector integer multiply), still ~1.9× stdlib."
+[[params.repos]]
+  name = "floats"
+  accel = "Dot/Sum/Min/Max/Distance/CosineSimilarity (float32 + float64)"
+  kind = "primitive"
+  result = "only pure-Go lib with the full vector-search API on all 6 arches (gonum/vek/kelindar are amd64-centric or partial); arm64 ~2× scalar."
+[[params.repos]]
+  name = "xxhash"
+  accel = "XXH3-64"
+  kind = "primitive"
+  result = "first Go XXH3 on all 6 SIMD arches, bit-exact vs official vectors. Honest: zeebo faster on arm64 (~22 vs ~15 GB/s) — value is breadth, not peak."
+[[params.repos]]
+  name = "streamvbyte"
+  accel = "Stream VByte uint32 codec"
+  kind = "primitive"
+  result = "first Go port on all 6 arches (others amd64-only); shuffle-LUT decode, byte-identical to lemire/streamvbyte; arm64 ~10× scalar."
