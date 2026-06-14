@@ -16,7 +16,7 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "base32"
   accel = "encoding/base32"
   kind = "drop-in"
-  result = "encode ~7.9× stdlib (AVX2). No prior pure-Go SIMD base32 to beat."
+  result = "encode ~7.9× stdlib (AVX2). Real SIMD on ppc64le VSRH + s390x VMLHH where arm64 can't. No prior pure-Go SIMD base32."
 [[params.repos]]
   name = "hex"
   accel = "encoding/hex"
@@ -41,7 +41,7 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "matchlen"
   accel = "LZ match-finder primitive"
   kind = "primitive"
-  result = "~10× scalar (NEON); real SIMD on all 4 arches; AVX2 ~2.08× SSE2."
+  result = "~10× scalar (NEON); real SIMD on all 6 arches; AVX2 ~2.08× SSE2."
 [[params.repos]]
   name = "bitpack"
   accel = "FastPFOR / simdcomp bit-packing"
