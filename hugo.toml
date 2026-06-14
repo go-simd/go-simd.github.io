@@ -81,4 +81,29 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "streamvbyte"
   accel = "Stream VByte uint32 codec"
   kind = "primitive"
-  result = "first Go port on all 6 arches (others amd64-only); shuffle-LUT decode, byte-identical to lemire/streamvbyte; arm64 ~10× scalar."
+  result = "first Go port on all 6 arches (others amd64-only); full codec — SIMD encode and decode, byte-identical to lemire/streamvbyte; decode arm64 ~10× scalar."
+[[params.repos]]
+  name = "ascii"
+  accel = "ASCII case (ToUpper/ToLower/EqualFold)"
+  kind = "drop-in"
+  result = "branchless vector case-fold, byte-identical to bytes/strings; real SIMD on all 6 arches incl. arm64 (multiply-free sign-bit predicate); arm64 ~4.9× stdlib (ToUpper)."
+[[params.repos]]
+  name = "levenshtein"
+  accel = "edit distance (Distance)"
+  kind = "primitive"
+  result = "Myers bit-parallel edit distance, 62–142× vs agnivade/levenshtein on long inputs. Honest: pure-Go bit-parallel, not vector-SIMD (word-serial column, no lane parallelism); endian-clean on all 6 arches."
+[[params.repos]]
+  name = "bitset"
+  accel = "bulk []uint64 set ops"
+  kind = "primitive"
+  result = "SIMD And/Or/AndNot/Xor + fused Count/IntersectionCount; amd64 Count ~3–3.9×. Honest: logical ops are bandwidth-bound (converge to scalar out-of-cache), popcount wins across the board."
+[[params.repos]]
+  name = "int8dot"
+  accel = "int8 quantized dot (Dot/DotUint8/DotU8S8)"
+  kind = "primitive"
+  result = "INT8 multiply-accumulate for ML embeddings, bit-exact vs scalar; amd64 AVX2 ~4×; arm64 NEON kernel on Go 1.27 (VSMULL/VUMULL; scalar on stable Go ≤ 1.26)."
+[[params.repos]]
+  name = "jsonvalidate"
+  accel = "encoding/json.Valid"
+  kind = "drop-in"
+  result = "byte-identical verdict to encoding/json.Valid; only SIMD JSON validator on all 6 arches (simdjson-go is amd64-only); SIMD string/space scans, ~1.4× on string-heavy JSON (number-/structure-heavy stays scalar)."
