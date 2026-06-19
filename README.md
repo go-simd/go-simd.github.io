@@ -1,3 +1,5 @@
+<p align="center"><img src="https://raw.githubusercontent.com/go-simd/brand/main/social/go-simd.png" alt="go-simd/go-simd.github.io" width="720"></p>
+
 # go-simd.github.io
 
 The organization's institutional landing page, served at
