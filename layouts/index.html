@@ -95,8 +95,8 @@
     <div class="pills">
       <span class="pill">CGO_ENABLED=0</span>
       <span class="pill">go-asmgen-generated</span>
-      <span class="pill">6 architectures</span>
-      <span class="pill">amd64 · arm64 · riscv64 · loong64 · ppc64le · s390x</span>
+      <span class="pill">6 SIMD targets, validated on 7 arches</span>
+      <span class="pill">amd64 · arm64 · riscv64 · loong64 · ppc64le · s390x · ppc64 BE</span>
       <span class="pill">llvm-mca cycle-modelled</span>
       <span class="pill">100% coverage</span>
       <span class="pill">honest benchmarks</span>
@@ -118,15 +118,23 @@
       results match exactly. The numbers are <strong>measured and honest</strong> — wins, parities,
       and the cases where SIMD genuinely does not help.</p>
 
-    <p class="lead"><strong>Six architectures, one generator.</strong> The amd64/arm64 throughput
-      figures below are native measurements. The <strong>ppc64le and s390x</strong> backends are
-      <strong>qemu-validated for correctness</strong> (official vectors, byte-identical fuzz; s390x
-      proves the kernels are <strong>bit-exact on big-endian</strong>) &mdash; native throughput is
-      pending, since there is no GitHub-hosted POWER/Z runner. Two highlights:
-      <strong>base32</strong> gets real SIMD on ppc64le (<code>VSRH</code>) and s390x
-      (<code>VMLHH</code>) precisely where Go's arm64 assembler lacks the register-variable shift and
-      integer vector multiply it needs; and every kernel is byte-for-byte correct on big-endian
-      s390x.</p>
+    <p class="lead"><strong>Six SIMD targets, validated on seven.</strong> The amd64/arm64 throughput
+      figures below are native measurements, and <strong>ppc64le is now measured on real silicon</strong>
+      too &mdash; a POWER10 host on the <a href="https://portal.cfarm.net/">GCC Compile Farm</a>
+      (VSX, Go 1.26.4, June 2026) &mdash; confirming the VSX kernels are not merely correct but fast:
+      matchlen <strong>6.3× scalar</strong>, streamvbyte decode <strong>11.9×</strong>, hex encode
+      <strong>7.6×</strong>, utf8 validate <strong>7×</strong>, crc64 <strong>5.7×</strong>. The
+      <strong>s390x</strong> backend stays <strong>qemu-validated for correctness</strong> (official
+      vectors, byte-identical fuzz on the big-endian target) &mdash; native throughput is still
+      pending, since there is no GitHub-hosted IBM Z runner. And beyond the six SIMD targets, the
+      whole suite is now <strong>build- and test-validated on a seventh architecture, ppc64
+      (big-endian)</strong>, on real POWER9 silicon: the portable fallback path proven bit-exact on a
+      big-endian target <em>distinct from</em> s390x's own vector kernel. SIMD acceleration stays on
+      six targets (ppc64 BE has no VSX build tag, so it runs the generic path); proven correctness now
+      spans seven. Two highlights: <strong>base32</strong> gets real SIMD on ppc64le
+      (<code>VSRH</code>) and s390x (<code>VMLHH</code>) precisely where Go's arm64 assembler lacks the
+      register-variable shift and integer vector multiply it needs; and every kernel is byte-for-byte
+      correct on big-endian s390x.</p>
 
     <h2 class="section">Repositories</h2>
     <section class="grid">
@@ -149,8 +157,10 @@
       (amd64 SSE2/AVX2, arm64 NEON, loong64 LSX/LASX, riscv64 RVV, ppc64le VSX, s390x vector
       facility), cycle-modelled with <code>llvm-mca</code>, validated on real AVX2 / native arm64 /
       QEMU riscv64+loong64+ppc64le+s390x, and held at 100% statement coverage as a CI gate. The
-      headline benchmarks come from native CI; for ppc64le and s390x the kernels are
-      QEMU-validated and native perf is pending real hardware.</p>
+      headline benchmarks come from native CI (amd64/arm64) and a real POWER10 host on the GCC
+      Compile Farm (ppc64le, Go 1.26.4); s390x stays QEMU-validated for correctness with native perf
+      pending (no GitHub-hosted IBM Z runner), and the suite additionally builds and passes its
+      differential + fuzz tests on a seventh arch, ppc64 big-endian, on real POWER9.</p>
   </main>
 
   <footer class="wrap">
