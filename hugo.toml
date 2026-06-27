@@ -16,7 +16,7 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "base32"
   accel = "encoding/base32"
   kind = "drop-in"
-  result = "encode ~7.9× stdlib (AVX2). Real SIMD on ppc64le VSRH + s390x VMLHH where arm64 can't. No prior pure-Go SIMD base32."
+  result = "encode ~7.9× stdlib (AVX2), now SIMD decode too + arm64 NEON encode on Go 1.27. Real SIMD on ppc64le VSRH + s390x VMLHH where arm64 can't; ppc64le now measured on real POWER9 (decode ~5.5×). No prior pure-Go SIMD base32."
 [[params.repos]]
   name = "hex"
   accel = "encoding/hex"
@@ -34,24 +34,24 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   result = "~12–14× stdlib, but ~7% behind mhr3/adler32-simd — near-parity, honest."
 [[params.repos]]
   name = "strconv"
-  accel = "strconv (base-10 parse)"
+  accel = "strconv (base-10 parse + ParseFloat)"
   kind = "drop-in"
-  result = "modest, honest 1.13–1.37× on long inputs; never regresses (delegates short)."
+  result = "ParseInt/Atoi ~2.2–2.7× on long inputs; added SIMD ParseFloat (Eisel-Lemire, ~1.1–1.36×); never regresses (delegates short/uncertain)."
 [[params.repos]]
   name = "matchlen"
   accel = "LZ match-finder primitive"
   kind = "primitive"
-  result = "~10× scalar (NEON); real SIMD on all 6 arches; AVX2 ~2.08× SSE2."
+  result = "~10× scalar (NEON); real SIMD on all 6 arches; AVX2 ~2.08× SSE2. Measured native: ppc64le POWER9 ~6.3×, riscv64 X60 ~5.8×, loong64 ~11.4× scalar."
 [[params.repos]]
   name = "bitpack"
   accel = "FastPFOR / simdcomp bit-packing"
   kind = "primitive"
-  result = "~21–32× scalar — byte-exact vs Lemire's simdcomp."
+  result = "~21–32× scalar — byte-exact vs Lemire's simdcomp. ppc64le measured on real POWER9: Pack ~7.0×, Unpack ~11.3× (overturns the earlier ~1.1× llvm-mca estimate)."
 [[params.repos]]
   name = "popcount"
   accel = "Hamming weight over []byte"
   kind = "primitive"
-  result = "size-dependent: ~9–12× in-cache, converges to memory-bound out-of-cache."
+  result = "size-dependent: ~9–12× in-cache, converges to memory-bound out-of-cache. Measured native: loong64 LSX ~6.1×, ppc64le POWER9 ~2.9× scalar (riscv64 stays scalar — no per-element vector popcount in Go's RVV asm)."
 [[params.repos]]
   name = "histogram"
   accel = "byte-value histogram"
@@ -66,22 +66,22 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "ascii85"
   accel = "encoding/ascii85"
   kind = "drop-in"
-  result = "first SIMD ascii85; real SIMD on 5 of 6 arches (arm64 = scalar — Go's arm64 asm lacks vector integer multiply), still ~1.9× stdlib."
+  result = "first SIMD ascii85, SIMD encode AND decode; real SIMD on all 6 arches incl. an arm64 NEON kernel on Go 1.27. Measured native: ppc64le POWER9 ~2.9× encode, riscv64 X60 ~4.0×, loong64 ~4.3×; arm64 NEON ~3.0× / fused-scalar ~1.9× on stable Go."
 [[params.repos]]
   name = "floats"
   accel = "Dot/Sum/Min/Max/Distance/CosineSimilarity (float32 + float64)"
   kind = "primitive"
-  result = "only pure-Go lib with the full vector-search API on all 6 arches (gonum/vek/kelindar are amd64-centric or partial); arm64 ~2× scalar."
+  result = "only pure-Go lib with the full vector-search API on all 6 arches (gonum/vek/kelindar are amd64-centric or partial); arm64 ~2× scalar. ppc64le measured on real POWER9: f32 VSX kernel ~1.55–1.61× over naive, f64 routes to the gc-autovectorized scalar loop (it beats VSX there — honest)."
 [[params.repos]]
   name = "xxhash"
   accel = "XXH3-64"
   kind = "primitive"
-  result = "first Go XXH3 on all 6 SIMD arches, bit-exact vs official vectors. Honest: zeebo faster on arm64 (~22 vs ~15 GB/s) — value is breadth, not peak."
+  result = "first Go XXH3 on all 6 SIMD arches, bit-exact vs official vectors. Honest: zeebo faster on arm64 (~22 vs ~15 GB/s), amd64 block-at-a-time kernel reaches ~0.94× zeebo. Where zeebo has no kernel we win big: riscv64 RVV ~2.5–3.5× zeebo on real X60 silicon; ppc64le near-parity (~0.91×) on real POWER9."
 [[params.repos]]
   name = "streamvbyte"
   accel = "Stream VByte uint32 codec"
   kind = "primitive"
-  result = "first Go port on all 6 arches (others amd64-only); full codec — SIMD encode and decode, byte-identical to lemire/streamvbyte; decode arm64 ~10× scalar."
+  result = "first Go port on all 6 arches (others amd64-only); full codec — SIMD encode and decode, byte-identical to lemire/streamvbyte; decode arm64 ~10× scalar. Measured native: ppc64le POWER9 decode ~11.6×, riscv64 X60 ~4.5×, loong64 ~11.8× scalar."
 [[params.repos]]
   name = "ascii"
   accel = "ASCII case (ToUpper/ToLower/EqualFold)"
@@ -101,9 +101,9 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "int8dot"
   accel = "int8 quantized dot (Dot/DotUint8/DotU8S8)"
   kind = "primitive"
-  result = "INT8 multiply-accumulate for ML embeddings, bit-exact vs scalar; amd64 AVX2 ~4×; arm64 NEON kernel on Go 1.27 (VSMULL/VUMULL; scalar on stable Go ≤ 1.26)."
+  result = "INT8 multiply-accumulate for ML embeddings, bit-exact vs scalar; amd64 AVX2 ~4×; arm64 NEON kernel on Go 1.27 (~2.4×; scalar on stable Go ≤ 1.26). Measured native: riscv64 X60 ~9.1× (biggest RVV win in the suite), loong64 ~8.9× (DotUint8 ~13.8×), ppc64le POWER9 ~4.1×."
 [[params.repos]]
   name = "jsonvalidate"
   accel = "encoding/json.Valid"
   kind = "drop-in"
-  result = "byte-identical verdict to encoding/json.Valid; only SIMD JSON validator on all 6 arches (simdjson-go is amd64-only); SIMD string/space scans, ~1.4× on string-heavy JSON (number-/structure-heavy stays scalar)."
+  result = "byte-identical verdict to encoding/json.Valid; only SIMD JSON validator on all 6 arches (simdjson-go is amd64-only); SIMD string/space scans, ~1.4× on string-heavy JSON (number-/structure-heavy stays scalar). Measured native on string-heavy: ppc64le POWER9 ~8.5× stdlib, riscv64 X60 ~5.2×."
