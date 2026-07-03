@@ -94,10 +94,13 @@
       and the cases where SIMD genuinely does not help.</p>
 
     <p class="lead"><strong>Six architectures, one generator.</strong> The amd64/arm64 throughput
-      figures below are native measurements. The <strong>ppc64le and s390x</strong> backends are
-      <strong>qemu-validated for correctness</strong> (official vectors, byte-identical fuzz; s390x
-      proves the kernels are <strong>bit-exact on big-endian</strong>) &mdash; native throughput is
-      pending, since there is no GitHub-hosted POWER/Z runner. Two highlights:
+      figures below are native measurements. <strong>s390x is now measured on real IBM z15</strong>
+      (VXE2, native execution, 2026-07-03, <code>-count=6</code>) &mdash; the vector-facility kernels
+      post clear wins (e.g. <strong>bitpack ~34&times;</strong>, <strong>streamvbyte decode ~20&times;</strong>,
+      <strong>hex encode ~18&times;</strong>, <strong>matchlen ~9.2&times;</strong>,
+      <strong>crc64 ~9.1&times;</strong>) and are <strong>bit-exact on big-endian</strong>.
+      <strong>ppc64le</strong> kernels are measured on real POWER9 where a GCC Compile Farm runner is
+      available, otherwise qemu-validated for correctness. Two highlights:
       <strong>base32</strong> gets real SIMD on ppc64le (<code>VSRH</code>) and s390x
       (<code>VMLHH</code>) precisely where Go's arm64 assembler lacks the register-variable shift and
       integer vector multiply it needs; and every kernel is byte-for-byte correct on big-endian
@@ -124,8 +127,8 @@
       (amd64 SSE2/AVX2, arm64 NEON, loong64 LSX/LASX, riscv64 RVV, ppc64le VSX, s390x vector
       facility), cycle-modelled with <code>llvm-mca</code>, validated on real AVX2 / native arm64 /
       QEMU riscv64+loong64+ppc64le+s390x, and held at 100% statement coverage as a CI gate. The
-      headline benchmarks come from native CI; for ppc64le and s390x the kernels are
-      QEMU-validated and native perf is pending real hardware.</p>
+      headline benchmarks come from native CI; <strong>s390x is measured on real IBM z15</strong>
+      (VXE2, 2026-07-03) and ppc64le on real POWER9 where a GCC Compile Farm runner is available.</p>
   </main>
 
   <footer class="wrap">
