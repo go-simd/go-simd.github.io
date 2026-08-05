@@ -63,6 +63,11 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   kind = "drop-in"
   result = "first pure-Go SIMD crc64 (stdlib + all Go libs are scalar); CLMUL folding, arm64 ~4.2× stdlib; all 6 arches (riscv64/loong64 scalar)."
 [[params.repos]]
+  name = "crc32"
+  accel = "hash/crc32"
+  kind = "drop-in"
+  result = "arm64-only, deliberately: stdlib IEEE path is already hardware-assisted on amd64/ppc64le/s390x, so only arm64's serial CRC32X fallback is worth beating; PMULL/PMULL2 fold-by-eight does that, every other arch and non-IEEE polynomial just calls hash/crc32."
+[[params.repos]]
   name = "ascii85"
   accel = "encoding/ascii85"
   kind = "drop-in"
