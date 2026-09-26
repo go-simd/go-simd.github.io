@@ -43,6 +43,11 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   kind = "primitive"
   result = "~10× scalar (NEON); real SIMD on all 6 arches; AVX2 ~2.08× SSE2. Measured native: ppc64le POWER9 ~6.3×, riscv64 X60 ~5.8×, loong64 ~11.4× scalar."
 [[params.repos]]
+  name = "matchlen-wasm"
+  accel = "the 7th target: GOOS=js/wasip1 GOARCH=wasm"
+  kind = "proof of concept"
+  result = "Go emits no v128 from source and wasm has no Plan 9 asm dialect, so a naive wasm build of matchlen falls back to scalar. The kernel lives in a companion module compiled from matchlen.wat and is called through //go:wasmimport. Measured on wazero 1.12.0 it is SLOWER below 4 KiB — 0.16x scalar at 64 B, 0.94x at 1 KiB — crosses over at 4 KiB (1.19x) and reaches 1.43x at 64 KiB. The call boundary is the cost, which is why this is a proof of concept and not the default path."
+[[params.repos]]
   name = "bitpack"
   accel = "FastPFOR / simdcomp bit-packing"
   kind = "primitive"
