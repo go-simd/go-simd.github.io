@@ -16,7 +16,7 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "base32"
   accel = "encoding/base32"
   kind = "drop-in"
-  result = "encode ~7.9× stdlib (AVX2), now SIMD decode too + arm64 NEON encode on Go 1.27. Real SIMD on ppc64le VSRH + s390x VMLHH where arm64 can't; ppc64le now measured on real POWER9 (decode ~5.5×). No prior pure-Go SIMD base32."
+  result = "encode ~7.9× stdlib (AVX2), SIMD decode too, and arm64 NEON encode + decode (decode ~25× at 1 MiB). Real SIMD on ppc64le VSRH + s390x VMLHH; ppc64le measured on real POWER9 (decode ~5.5×). No prior pure-Go SIMD base32."
 [[params.repos]]
   name = "hex"
   accel = "encoding/hex"
