@@ -145,6 +145,14 @@
       does not emit <code>v128</code> from Go source. It is a standalone companion repo, not one of
       the 21 packages below.</p>
 
+    <p class="lead"><a href="https://github.com/go-simd/highway"><code>highway</code></a> is a
+      <strong>maintained fork</strong> of <a href="https://github.com/ajroetker/go-highway">ajroetker/go-highway</a>,
+      not a go-asmgen package: its upstream releases require a tool module at a version that was never
+      published, so no consumer could <code>go mod tidy</code> against them. The fork publishes that module,
+      retracts the inherited broken tags and carries security updates until upstream releases the fix.
+      On amd64 its AVX2/AVX-512 kernels need <code>GOEXPERIMENT=simd</code>; without it, integer kernels
+      take an allocating generic fallback &mdash; <a href="/docs/repos/highway/">measure before you rely on it</a>.</p>
+
     <h2 class="section">Repositories</h2>
     <section class="grid">
       {{ range .Site.Params.repos }}
