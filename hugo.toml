@@ -111,7 +111,7 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "bitset"
   accel = "bulk []uint64 set ops"
   kind = "primitive"
-  result = "SIMD And/Or/AndNot/Xor + fused Count/IntersectionCount; amd64 Count ~3–3.9×. Honest: logical ops are bandwidth-bound (converge to scalar out-of-cache), popcount wins across the board."
+  result = "SIMD And/Or/AndNot/Xor + fused Count/IntersectionCount; amd64 Count ~3–3.9×. Honest: logical ops are bandwidth-bound (converge to scalar out-of-cache), popcount wins across the board. FromBools/ToBools (amd64 AVX2, arm64 NEON): 1.2–3.6× NumPy packbits/unpackbits at 2^16–2^20 on Neoverse N1 and Zen 3."
 [[params.repos]]
   name = "int8dot"
   accel = "int8 quantized dot (Dot/DotUint8/DotU8S8)"
