@@ -41,16 +41,14 @@
   <div class="hero"><div class="wrap">
     <div>
       <h1 class="head">go-simd</h1>
-      <p class="sub">Pure-Go <strong>SIMD drop-ins for the standard library</strong> —
+      <p class="sub">{{ if partial "mantra-on.html" . }}Go{{ else }}Pure-Go{{ end }} <strong>SIMD drop-ins for the standard library</strong> —
       <code>base64</code>, <code>base32</code>, <code>hex</code>, <code>ascii85</code>,
       <code>utf8</code>, <code>adler32</code>, <code>crc32</code>, <code>crc64</code>,
       <code>strconv</code> and the primitives under them, with <strong>byte-identical</strong>
       output on plain <code>go build</code>.</p>
-      <div class="cta">
-        <a class="btn btn-primary" href="/docs/">{{ partial "icons/book.html" . }}Documentation</a>
-        <a class="btn btn-ghost" href="https://github.com/go-simd">{{ partial "icons/github.html" . }}GitHub</a>
-      </div>
-      <div class="trust">{{ if not (partial "mantra-on.html" $) }}<span class="pill">CGO_ENABLED=0</span>{{ end }}<span class="pill">go-asmgen-generated</span><span class="pill">6 architectures</span><span class="pill">amd64 · arm64 · riscv64 · loong64 · ppc64le · s390x</span><span class="pill">llvm-mca cycle-modelled</span><span class="pill">100% coverage</span><span class="pill">honest benchmarks</span></div>
+      {{/* [[params.cta]] in hugo.toml: the kit renders the row */}}
+      {{ partial "cta.html" . }}
+      <div class="trust">{{ if not (partial "mantra-on.html" $) }}{{ if not (partial "mantra-on.html" $) }}<span class="pill">CGO_ENABLED=0</span>{{ end }}{{ end }}<span class="pill">go-asmgen-generated</span><span class="pill">6 architectures</span><span class="pill">amd64 · arm64 · riscv64 · loong64 · ppc64le · s390x</span><span class="pill">llvm-mca cycle-modelled</span><span class="pill">100% coverage</span><span class="pill">honest benchmarks</span></div>
     </div>
     {{ partial "hero-carousel.html" . }}
   </div></div>
