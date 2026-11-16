@@ -36,7 +36,7 @@ disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
   name = "adler32"
   accel = "hash/adler32"
   kind = "drop-in"
-  result = "~12–14× stdlib, but ~7% behind mhr3/adler32-simd — near-parity, honest."
+  result = "~12–14× stdlib, but ~7% behind mhr3/adler32-simd — near-parity, honest. New in v0.2.0: the fletcher4 subpackage (OpenZFS fletcher-4; scalar, NEON, AVX2 and AVX-512; 23 GB/s on M4, 45 GB/s on Zen 4 AVX-512)."
 [[params.repos]]
   name = "strconv"
   accel = "strconv (base-10 parse + ParseFloat)"
